@@ -78,7 +78,7 @@ https://derrickmokaya.github.io/Organogram-President-Uhuru-Kenyatta-Cabinet/
 
 ---
 
-## Future Improvements
+## Possible Future Improvements
 
 - Export to PDF/PNG
 - Mobile-first optimization
@@ -96,8 +96,11 @@ https://derrickmokaya.github.io/Organogram-President-Uhuru-Kenyatta-Cabinet/
 
 ### Derrick Jesse Mokaya
 
-- Actuarial Science Graduate
-- Data Analytics & BI Professional
+- BSc. Actuarial Science 
+- Data Management & Analytics
+- BI Professional
+- Process Intelligence enthusiast
+- Intelligent process optimization & transformation
 - Governance Data Visualization Enthusiast
 
 ### Skills Demonstrated
