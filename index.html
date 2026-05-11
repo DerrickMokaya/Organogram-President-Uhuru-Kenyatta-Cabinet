@@ -1,319 +1,266 @@
 <button onclick="window.print()">Export PDF</button>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: var(--font-sans, sans-serif); }
-  .outer { padding: 16px 0; }
-  .era-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-  .era-tab { padding: 6px 14px; border-radius: var(--border-radius-md, 8px); font-size: 13px; font-weight: 500; cursor: pointer; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); transition: all .15s; }
-  .era-tab.active { background: var(--color-background-info); color: var(--color-text-info); border-color: transparent; }
-  .era-tab:hover:not(.active) { background: var(--color-background-secondary); }
-  .chart-wrapper { overflow-x: auto; overflow-y: visible; }
-  .tree-svg { display: block; }
-  .node-group { cursor: pointer; }
-  .node-group:hover .node-card { opacity: 0.85; }
-  .node-card { transition: opacity .15s; }
-  .search-row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
-  .search-row input { flex: 1; padding: 6px 10px; font-size: 13px; border-radius: var(--border-radius-md, 8px); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); }
-  .search-row input::placeholder { color: var(--color-text-tertiary); }
-  .stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
-  .stat-pill { font-size: 12px; padding: 4px 12px; border-radius: 99px; border: 0.5px solid var(--color-border-tertiary); color: var(--color-text-secondary); background: var(--color-background-secondary); }
-  .tooltip { position: fixed; pointer-events: none; z-index: 9999; background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md, 8px); padding: 10px 14px; font-size: 13px; box-shadow: 0 4px 16px rgba(0,0,0,.12); max-width: 260px; display: none; }
-  .tooltip .t-name { font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
-  .tooltip .t-ministry { color: var(--color-text-secondary); margin-bottom: 3px; }
-  .tooltip .t-ps { font-size: 12px; color: var(--color-text-tertiary); }
-  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; }
-  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--color-text-secondary); }
-  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans,sans-serif)}
+.outer{padding:12px 0}
+.era-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.era-tab{padding:7px 14px;border-radius:var(--border-radius-md,8px);font-size:14px;font-weight:500;cursor:pointer;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);transition:all .15s}
+.era-tab.active{background:var(--color-background-info);color:var(--color-text-info);border-color:transparent}
+.era-tab:hover:not(.active){background:var(--color-background-secondary)}
+.chart-wrapper{overflow-x:auto;overflow-y:visible}
+.search-row{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.search-row input{flex:1;padding:7px 12px;font-size:14px;border-radius:var(--border-radius-md,8px);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary)}
+.search-row input::placeholder{color:var(--color-text-tertiary)}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.stat-pill{font-size:13px;padding:5px 14px;border-radius:99px;border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary);background:var(--color-background-secondary)}
+.tooltip{position:fixed;pointer-events:none;z-index:9999;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md,8px);padding:12px 16px;font-size:14px;box-shadow:0 4px 16px rgba(0,0,0,.12);max-width:280px;display:none}
+.tooltip .t-name{font-weight:500;color:var(--color-text-primary);margin-bottom:5px;font-size:15px}
+.tooltip .t-ministry{color:var(--color-text-secondary);margin-bottom:4px;font-size:13px}
+.tooltip .t-ps{font-size:12px;color:var(--color-text-tertiary)}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--color-text-secondary)}
+.legend-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.node-group{cursor:pointer}
+.node-group:hover .node-card{opacity:0.82}
+.node-card{transition:opacity .15s}
 </style>
 <div class="outer">
-  <h2 style="font-size:16px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px;">President Uhuru Kenyatta — Cabinet Organogram</h2>
-  <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:14px;">Hover over any card to see details. Click a tab to switch cabinet era.</p>
-
+  <h2 style="font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px;">President Uhuru Kenyatta — Cabinet Organogram</h2>
+  <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:12px;">Hover over any card for details. Click a tab to switch cabinet era.</p>
   <div class="era-tabs" id="era-tabs"></div>
   <div class="stats" id="stats-row"></div>
   <div class="search-row">
     <input type="text" id="search-box" placeholder="Search by name, ministry, or principal secretary…" oninput="filterNodes(this.value)">
   </div>
-
   <div class="chart-wrapper">
-    <svg id="tree-svg" class="tree-svg"></svg>
+    <svg id="tree-svg" style="display:block"></svg>
   </div>
-
   <div class="legend">
     <div class="legend-item"><div class="legend-dot" style="background:#185FA5"></div>Cabinet Secretary</div>
     <div class="legend-item"><div class="legend-dot" style="background:#0F6E56"></div>Principal Secretary</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#3C3489"></div>President (head)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#534AB7"></div>President (head)</div>
   </div>
 </div>
 <div class="tooltip" id="tooltip"></div>
-
 <script>
-const CABINETS = [
-  {
-    label: "1st Cabinet — May 2013",
-    date: "30th May 2013",
-    members: [
-      { name: "Henry Rotich", ministry: "National Treasury", ps: "Kamau Thugge" },
-      { name: "Amina Mohamed", ministry: "Foreign Affairs", ps: "Karanja Kibicho" },
-      { name: "Joseph Ole Lenku", ministry: "Interior & Coordination", ps: "Mutea Iringo" },
-      { name: "Najib Balala", ministry: "Mining", ps: "John Munyes" },
-      { name: "Raychelle Omamo", ministry: "Defence", ps: "Monica Juma" },
-      { name: "Fred Matiang'i", ministry: "ICT", ps: "Joseph Tiampati Ole Musuni" },
-      { name: "Charity Ngilu", ministry: "Lands, Housing & Urban Dev.", ps: "Mariamu El-Maawy" },
-      { name: "James Macharia", ministry: "Health", ps: "Khadijah Kassachoon" },
-      { name: "Felix Koskei", ministry: "Agriculture, Livestock & Fisheries", ps: "Sicily Kariuki" },
-      { name: "Davis Chirchir", ministry: "Energy & Petroleum", ps: "Joseph Njoroge" },
-      { name: "Kazungu Kambi", ministry: "Labour, Social Security & Services", ps: "Ali Noor Ismail" },
-      { name: "Phyllis Kandie", ministry: "East African Affairs, Commerce & Tourism", ps: "Ibrahim Mohammed" },
-      { name: "Michael Kamau", ministry: "Transport & Infrastructure", ps: "John Mosonik" },
-      { name: "Judi Wakhungu", ministry: "Environment, Water & Natural Resources", ps: "Richard Lesiyampe" },
-      { name: "Jacob Kaimenyi", ministry: "Education", ps: "Belio Kipsang" },
-      { name: "Hassan Wario", ministry: "Sports, Culture & the Arts", ps: "Josephine Kabura" },
-      { name: "Adan Mohamed", ministry: "Industrialization & Enterprise Dev.", ps: "Wilson Songa" },
-      { name: "Anne Waiguru", ministry: "Devolution & Planning", ps: "Peter Mangiti" },
-    ]
-  },
-  {
-    label: "2nd Cabinet — Nov 2015",
-    date: "24th November 2015",
-    members: [
-      { name: "Henry Rotich", ministry: "National Treasury", ps: "Kamau Thugge" },
-      { name: "Adan Mohamed", ministry: "Industrialization & Enterprise Dev.", ps: "Wilson Songa" },
-      { name: "Fred Matiang'i", ministry: "Education", ps: "Belio Kipsang" },
-      { name: "Mwangi Kiunjuri", ministry: "Devolution & Planning", ps: "Mwanamaka Mabruki" },
-      { name: "James Macharia", ministry: "Transport & Infrastructure", ps: "John Mosonik" },
-      { name: "Judi Wakhungu", ministry: "Environment", ps: "Charles Sunkuli" },
-      { name: "Eugene Wamalwa", ministry: "Water", ps: "Fred Segor" },
-      { name: "Dan Kazungu", ministry: "Mining", ps: "John Munyes" },
-      { name: "Willy Bett", ministry: "Agriculture", ps: "Richard Lesiyampe" },
-      { name: "Charles Keter", ministry: "Energy", ps: "Joseph Njoroge" },
-      { name: "Amina Mohamed", ministry: "Foreign Affairs", ps: "Monica Juma" },
-      { name: "Jacob Kaimenyi", ministry: "Lands", ps: "Mariam El Maawy" },
-      { name: "Hassan Wario", ministry: "Sports, Culture & the Arts", ps: "Joe Okudo" },
-      { name: "Joe Mucheru", ministry: "ICT", ps: "Sammy Itemere" },
-      { name: "Sicily Kariuki", ministry: "Public Service, Youth & Gender", ps: "Andrew Tuimur" },
-      { name: "Joseph Nkaissery", ministry: "Interior", ps: "Karanja Kibicho" },
-      { name: "Raychelle Omamo", ministry: "Defence", ps: "Peter Kaberia" },
-      { name: "Phyllis Kandie", ministry: "Labour & East African Affairs", ps: "Susan Mochache" },
-      { name: "Najib Balala", ministry: "Tourism", ps: "John Konchellah" },
-      { name: "Cleopa Mailu", ministry: "Health", ps: "Nicholas Muraguri" },
-    ]
-  },
-  {
-    label: "2nd Term — Jan 2018",
-    date: "26th January 2018",
-    members: [
-      { name: "Henry Rotich", ministry: "National Treasury & Planning", ps: "Kamau Thugge" },
-      { name: "Fred Matiang'i", ministry: "Interior & Coordination", ps: "Karanja Kibicho" },
-      { name: "Monica Juma", ministry: "Foreign Affairs & Intl. Trade", ps: "Macharia Kamau / Ababu Namwamba" },
-      { name: "Amina Mohamed", ministry: "Education", ps: "Belio Kipsang" },
-      { name: "James Macharia", ministry: "Transport & Infrastructure", ps: "Esther Koimett" },
-      { name: "Sicily Kariuki", ministry: "Health", ps: "Susan Mochache" },
-      { name: "Eugene Wamalwa", ministry: "Devolution & ASAL Areas", ps: "Micah Powon" },
-      { name: "Joseph Mucheru", ministry: "ICT", ps: "Jerome Ochieng" },
-      { name: "Peter Munya", ministry: "EAC & Northern Corridor", ps: "Chris Kiptoo" },
-      { name: "Ukur Yatani", ministry: "Labour & Social Protection", ps: "Nelson Marwa" },
-      { name: "Charles Keter", ministry: "Energy", ps: "Joseph Njoroge" },
-      { name: "Keriako Tobiko", ministry: "Environment & Forestry", ps: "Chris Kiptoo" },
-      { name: "Mwangi Kiunjuri", ministry: "Agriculture & Irrigation", ps: "Hamadi Boga" },
-      { name: "Najib Balala", ministry: "Tourism & Wildlife", ps: "John Konchellah" },
-      { name: "Simon Chelugui", ministry: "Water & Sanitation", ps: "Joseph Irungu" },
-      { name: "Margaret Kobia", ministry: "Public Service, Youth & Gender", ps: "Lilian Omollo / Rachel Shebesh" },
-      { name: "Rashid Echesa", ministry: "Sports, Culture & Heritage", ps: "Joe Okudo" },
-      { name: "Adan Mohamed", ministry: "EAC & Regional Development", ps: "Kevit Desai" },
-      { name: "Faridah Karoney", ministry: "Lands & Physical Planning", ps: "Nicholas Muraguri" },
-      { name: "Raychelle Omamo", ministry: "Defence", ps: "Ibrahim Mohamed" },
-      { name: "John Munyes", ministry: "Petroleum & Mining", ps: "" },
-      { name: "Raphael Tuju", ministry: "Cabinet Secretary — No Portfolio", ps: "" },
-    ]
-  },
-  {
-    label: "Reshuffle — Jan 2020",
-    date: "16th January 2020",
-    members: [
-      { name: "Fred Matiang'i", ministry: "Interior & Coordination", ps: "Karanja Kibicho" },
-      { name: "Najib Balala", ministry: "Tourism & Wildlife", ps: "Fred Segor" },
-      { name: "James Macharia", ministry: "Transport, Infrastructure, Housing & Works", ps: "Paul Maringa" },
-      { name: "Raychelle Omamo", ministry: "Foreign Affairs", ps: "Macharia Kamau" },
-      { name: "Amina Mohamed", ministry: "Sports, Culture & Heritage", ps: "Joe Okudo" },
-      { name: "Adan Mohamed", ministry: "EAC & Regional Development", ps: "Kevit Desai" },
-      { name: "Sicily Kariuki", ministry: "Water, Sanitation & Irrigation", ps: "Joseph Irungu" },
-      { name: "Eugene Wamalwa", ministry: "Devolution & ASALs", ps: "Micah Powon" },
-      { name: "Charles Keter", ministry: "Energy", ps: "Joseph Njoroge" },
-      { name: "Joseph Mucheru", ministry: "ICT, Innovation & Youth Affairs", ps: "Esther Koimett" },
-      { name: "Peter Munya", ministry: "Agriculture, Livestock, Fisheries & Cooperatives", ps: "Hamadi Boga" },
-      { name: "Margaret Kobia", ministry: "Public Service & Gender", ps: "Mary Kimonye" },
-      { name: "John Munyes", ministry: "Petroleum & Mining", ps: "Peter Kaberia" },
-      { name: "Monica Juma", ministry: "Defence", ps: "Ibrahim Mohamed" },
-      { name: "Simon Chelugui", ministry: "Labour & Social Protection", ps: "Nelson Marwa" },
-      { name: "Keriako Tobiko", ministry: "Environment & Forestry", ps: "Chris Kiptoo" },
-      { name: "Farida Karoney", ministry: "Lands & Physical Planning", ps: "Enosh Onyango" },
-      { name: "Ukur Yatani", ministry: "National Treasury & Planning", ps: "Julius Muia" },
-      { name: "George Magoha", ministry: "Education", ps: "Belio Kipsang" },
-      { name: "Mutahi Kagwe", ministry: "Health", ps: "Susan Mochache" },
-      { name: "Betty Maina", ministry: "Industrialization, Trade & Enterprise Dev.", ps: "Johnson Weru" },
-    ]
-  }
+const CABINETS=[
+{label:"1st Cabinet — May 2013",date:"30 May 2013",members:[
+{name:"Henry Rotich",ministry:"National Treasury",ps:"Kamau Thugge"},
+{name:"Amina Mohamed",ministry:"Foreign Affairs",ps:"Karanja Kibicho"},
+{name:"Joseph Ole Lenku",ministry:"Interior & Coordination",ps:"Mutea Iringo"},
+{name:"Najib Balala",ministry:"Mining",ps:"John Munyes"},
+{name:"Raychelle Omamo",ministry:"Defence",ps:"Monica Juma"},
+{name:"Fred Matiang'i",ministry:"ICT",ps:"Joseph T. Ole Musuni"},
+{name:"Charity Ngilu",ministry:"Lands, Housing & Urban Dev.",ps:"Mariamu El-Maawy"},
+{name:"James Macharia",ministry:"Health",ps:"Khadijah Kassachoon"},
+{name:"Felix Koskei",ministry:"Agriculture, Livestock & Fisheries",ps:"Sicily Kariuki"},
+{name:"Davis Chirchir",ministry:"Energy & Petroleum",ps:"Joseph Njoroge"},
+{name:"Kazungu Kambi",ministry:"Labour, Social Security & Services",ps:"Ali Noor Ismail"},
+{name:"Phyllis Kandie",ministry:"EAC, Commerce & Tourism",ps:"Ibrahim Mohammed"},
+{name:"Michael Kamau",ministry:"Transport & Infrastructure",ps:"John Mosonik"},
+{name:"Judi Wakhungu",ministry:"Environment, Water & Natural Resources",ps:"Richard Lesiyampe"},
+{name:"Jacob Kaimenyi",ministry:"Education",ps:"Belio Kipsang"},
+{name:"Hassan Wario",ministry:"Sports, Culture & the Arts",ps:"Josephine Kabura"},
+{name:"Adan Mohamed",ministry:"Industrialization & Enterprise Dev.",ps:"Wilson Songa"},
+{name:"Anne Waiguru",ministry:"Devolution & Planning",ps:"Peter Mangiti"},
+]},
+{label:"2nd Cabinet — Nov 2015",date:"24 Nov 2015",members:[
+{name:"Henry Rotich",ministry:"National Treasury",ps:"Kamau Thugge"},
+{name:"Adan Mohamed",ministry:"Industrialization & Enterprise Dev.",ps:"Wilson Songa"},
+{name:"Fred Matiang'i",ministry:"Education",ps:"Belio Kipsang"},
+{name:"Mwangi Kiunjuri",ministry:"Devolution & Planning",ps:"Mwanamaka Mabruki"},
+{name:"James Macharia",ministry:"Transport & Infrastructure",ps:"John Mosonik"},
+{name:"Judi Wakhungu",ministry:"Environment",ps:"Charles Sunkuli"},
+{name:"Eugene Wamalwa",ministry:"Water",ps:"Fred Segor"},
+{name:"Dan Kazungu",ministry:"Mining",ps:"John Munyes"},
+{name:"Willy Bett",ministry:"Agriculture",ps:"Richard Lesiyampe"},
+{name:"Charles Keter",ministry:"Energy",ps:"Joseph Njoroge"},
+{name:"Amina Mohamed",ministry:"Foreign Affairs",ps:"Monica Juma"},
+{name:"Jacob Kaimenyi",ministry:"Lands",ps:"Mariam El Maawy"},
+{name:"Hassan Wario",ministry:"Sports, Culture & the Arts",ps:"Joe Okudo"},
+{name:"Joe Mucheru",ministry:"ICT",ps:"Sammy Itemere"},
+{name:"Sicily Kariuki",ministry:"Public Service, Youth & Gender",ps:"Andrew Tuimur"},
+{name:"Joseph Nkaissery",ministry:"Interior",ps:"Karanja Kibicho"},
+{name:"Raychelle Omamo",ministry:"Defence",ps:"Peter Kaberia"},
+{name:"Phyllis Kandie",ministry:"Labour & East African Affairs",ps:"Susan Mochache"},
+{name:"Najib Balala",ministry:"Tourism",ps:"John Konchellah"},
+{name:"Cleopa Mailu",ministry:"Health",ps:"Nicholas Muraguri"},
+]},
+{label:"2nd Term — Jan 2018",date:"26 Jan 2018",members:[
+{name:"Henry Rotich",ministry:"National Treasury & Planning",ps:"Kamau Thugge"},
+{name:"Fred Matiang'i",ministry:"Interior & Coordination",ps:"Karanja Kibicho"},
+{name:"Monica Juma",ministry:"Foreign Affairs & Intl. Trade",ps:"Macharia Kamau"},
+{name:"Amina Mohamed",ministry:"Education",ps:"Belio Kipsang"},
+{name:"James Macharia",ministry:"Transport & Infrastructure",ps:"Esther Koimett"},
+{name:"Sicily Kariuki",ministry:"Health",ps:"Susan Mochache"},
+{name:"Eugene Wamalwa",ministry:"Devolution & ASAL Areas",ps:"Micah Powon"},
+{name:"Joseph Mucheru",ministry:"ICT",ps:"Jerome Ochieng"},
+{name:"Peter Munya",ministry:"EAC & Northern Corridor",ps:"Chris Kiptoo"},
+{name:"Ukur Yatani",ministry:"Labour & Social Protection",ps:"Nelson Marwa"},
+{name:"Charles Keter",ministry:"Energy",ps:"Joseph Njoroge"},
+{name:"Keriako Tobiko",ministry:"Environment & Forestry",ps:"Chris Kiptoo"},
+{name:"Mwangi Kiunjuri",ministry:"Agriculture & Irrigation",ps:"Hamadi Boga"},
+{name:"Najib Balala",ministry:"Tourism & Wildlife",ps:"John Konchellah"},
+{name:"Simon Chelugui",ministry:"Water & Sanitation",ps:"Joseph Irungu"},
+{name:"Margaret Kobia",ministry:"Public Service, Youth & Gender",ps:"Lilian Omollo"},
+{name:"Rashid Echesa",ministry:"Sports, Culture & Heritage",ps:"Joe Okudo"},
+{name:"Adan Mohamed",ministry:"EAC & Regional Development",ps:"Kevit Desai"},
+{name:"Faridah Karoney",ministry:"Lands & Physical Planning",ps:"Nicholas Muraguri"},
+{name:"Raychelle Omamo",ministry:"Defence",ps:"Ibrahim Mohamed"},
+{name:"John Munyes",ministry:"Petroleum & Mining",ps:""},
+{name:"Raphael Tuju",ministry:"Cabinet Secretary — No Portfolio",ps:""},
+]},
+{label:"Reshuffle — Jan 2020",date:"16 Jan 2020",members:[
+{name:"Fred Matiang'i",ministry:"Interior & Coordination",ps:"Karanja Kibicho"},
+{name:"Najib Balala",ministry:"Tourism & Wildlife",ps:"Fred Segor"},
+{name:"James Macharia",ministry:"Transport, Infrastructure & Housing",ps:"Paul Maringa"},
+{name:"Raychelle Omamo",ministry:"Foreign Affairs",ps:"Macharia Kamau"},
+{name:"Amina Mohamed",ministry:"Sports, Culture & Heritage",ps:"Joe Okudo"},
+{name:"Adan Mohamed",ministry:"EAC & Regional Development",ps:"Kevit Desai"},
+{name:"Sicily Kariuki",ministry:"Water, Sanitation & Irrigation",ps:"Joseph Irungu"},
+{name:"Eugene Wamalwa",ministry:"Devolution & ASALs",ps:"Micah Powon"},
+{name:"Charles Keter",ministry:"Energy",ps:"Joseph Njoroge"},
+{name:"Joseph Mucheru",ministry:"ICT, Innovation & Youth Affairs",ps:"Esther Koimett"},
+{name:"Peter Munya",ministry:"Agriculture, Livestock & Fisheries",ps:"Hamadi Boga"},
+{name:"Margaret Kobia",ministry:"Public Service & Gender",ps:"Mary Kimonye"},
+{name:"John Munyes",ministry:"Petroleum & Mining",ps:"Peter Kaberia"},
+{name:"Monica Juma",ministry:"Defence",ps:"Ibrahim Mohamed"},
+{name:"Simon Chelugui",ministry:"Labour & Social Protection",ps:"Nelson Marwa"},
+{name:"Keriako Tobiko",ministry:"Environment & Forestry",ps:"Chris Kiptoo"},
+{name:"Farida Karoney",ministry:"Lands & Physical Planning",ps:"Enosh Onyango"},
+{name:"Ukur Yatani",ministry:"National Treasury & Planning",ps:"Julius Muia"},
+{name:"George Magoha",ministry:"Education",ps:"Belio Kipsang"},
+{name:"Mutahi Kagwe",ministry:"Health",ps:"Susan Mochache"},
+{name:"Betty Maina",ministry:"Industrialization & Trade",ps:"Johnson Weru"},
+]}
 ];
 
-let currentIdx = 0;
-let filterText = "";
+let currentIdx=0,filterText="";
 
-const COLORS = {
-  president: { fill: "#26215C", stroke: "#534AB7", text: "#EEEDFE", sub: "#AFA9EC" },
-  cs: { fill: "#042C53", stroke: "#185FA5", text: "#E6F1FB", sub: "#85B7EB" },
-  ps: { fill: "#04342C", stroke: "#0F6E56", text: "#E1F5EE", sub: "#5DCAA5" },
+const C={
+  pres:{fill:"#26215C",stroke:"#534AB7",text:"#EEEDFE",sub:"#AFA9EC"},
+  cs:{fill:"#042C53",stroke:"#185FA5",text:"#E6F1FB",sub:"#85B7EB"},
+  ps:{fill:"#04342C",stroke:"#0F6E56",text:"#E1F5EE",sub:"#5DCAA5"},
 };
 
-function truncate(str, max) {
-  return str && str.length > max ? str.slice(0, max - 1) + "…" : str;
-}
+function trunc(s,n){return s&&s.length>n?s.slice(0,n-1)+"…":s||""}
 
-function initTabs() {
-  const container = document.getElementById("era-tabs");
-  container.innerHTML = "";
-  CABINETS.forEach((c, i) => {
-    const btn = document.createElement("button");
-    btn.className = "era-tab" + (i === currentIdx ? " active" : "");
-    btn.textContent = c.label;
-    btn.onclick = () => { currentIdx = i; filterText = ""; document.getElementById("search-box").value = ""; initTabs(); render(); };
-    container.appendChild(btn);
+function initTabs(){
+  const c=document.getElementById("era-tabs");
+  c.innerHTML="";
+  CABINETS.forEach((cab,i)=>{
+    const b=document.createElement("button");
+    b.className="era-tab"+(i===currentIdx?" active":"");
+    b.textContent=cab.label;
+    b.onclick=()=>{currentIdx=i;filterText="";document.getElementById("search-box").value="";initTabs();render()};
+    c.appendChild(b);
   });
 }
 
-function updateStats(members) {
-  const row = document.getElementById("stats-row");
-  const withPS = members.filter(m => m.ps).length;
-  row.innerHTML = `
-    <span class="stat-pill">${members.length} Cabinet Secretaries</span>
-    <span class="stat-pill">${withPS} with Principal Secretary</span>
-    <span class="stat-pill">Sworn in: ${CABINETS[currentIdx].date}</span>
-  `;
+function updateStats(members){
+  const r=document.getElementById("stats-row");
+  const wp=members.filter(m=>m.ps).length;
+  r.innerHTML=`<span class="stat-pill">${members.length} Cabinet Secretaries</span><span class="stat-pill">${wp} with Principal Secretary</span><span class="stat-pill">Sworn in: ${CABINETS[currentIdx].date}</span>`;
 }
 
-function render() {
-  const svg = document.getElementById("tree-svg");
-  const cabinet = CABINETS[currentIdx];
-  const members = filterText
-    ? cabinet.members.filter(m =>
-        m.name.toLowerCase().includes(filterText) ||
-        m.ministry.toLowerCase().includes(filterText) ||
-        (m.ps || "").toLowerCase().includes(filterText)
-      )
-    : cabinet.members;
-
+function render(){
+  const svg=document.getElementById("tree-svg");
+  const cabinet=CABINETS[currentIdx];
+  const members=filterText?cabinet.members.filter(m=>
+    m.name.toLowerCase().includes(filterText)||
+    m.ministry.toLowerCase().includes(filterText)||
+    (m.ps||"").toLowerCase().includes(filterText)
+  ):cabinet.members;
   updateStats(cabinet.members);
 
-  const CARD_W = 180;
-  const CARD_H = 52;
-  const PS_H = 40;
-  const COL_GAP = 16;
-  const ROW_GAP = 90;
-  const COLS = 3;
-  const START_Y = 100;
-  const HEAD_W = 220;
-  const HEAD_H = 60;
-  const SVG_W = COLS * (CARD_W + COL_GAP) + COL_GAP + 20;
-  const totalSVGW = Math.max(SVG_W, 580);
+  // Layout constants — larger cards, bigger fonts
+  const COLS=3;
+  const CW=210; // card width
+  const CH=62;  // CS card height
+  const PSH=48; // PS card height
+  const HGAP=18; // horizontal gap
+  const VGAP=30; // vertical gap between PS bottom and next row CS top
+  const ROW_H=CH+PSH+16+VGAP; // total row height
+  const START_Y=108;
+  const HW=250; // head card width
+  const HH=66;
+  const TOTAL_W=COLS*(CW+HGAP)-HGAP+80;
+  const SVG_W=Math.max(TOTAL_W,640);
+  const rows=Math.ceil(members.length/COLS);
+  const SVG_H=START_Y+rows*ROW_H+50;
 
-  const rows = Math.ceil(members.length / COLS);
-  const totalH = START_Y + rows * (CARD_H + PS_H + ROW_GAP) + 60;
+  svg.setAttribute("width",SVG_W);
+  svg.setAttribute("height",SVG_H);
+  svg.setAttribute("viewBox",`0 0 ${SVG_W} ${SVG_H}`);
 
-  svg.setAttribute("width", totalSVGW);
-  svg.setAttribute("height", totalH);
-  svg.setAttribute("viewBox", `0 0 ${totalSVGW} ${totalH}`);
-
-  let html = `<defs>
-    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M2 1L8 5L2 9" fill="none" stroke="#534AB7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </marker>
+  let h=`<defs>
     <marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M2 1L8 5L2 9" fill="none" stroke="${C.ps.stroke}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     </marker>
   </defs>`;
 
   // President node
-  const headX = (totalSVGW - HEAD_W) / 2;
-  const headY = 16;
-  html += `<g class="node-group">
-    <rect class="node-card" x="${headX}" y="${headY}" width="${HEAD_W}" height="${HEAD_H}" rx="10" fill="${COLORS.president.fill}" stroke="${COLORS.president.stroke}" stroke-width="1"/>
-    <text x="${headX + HEAD_W/2}" y="${headY + 22}" text-anchor="middle" font-size="13" font-weight="500" fill="${COLORS.president.text}">President Uhuru Kenyatta</text>
-    <text x="${headX + HEAD_W/2}" y="${headY + 40}" text-anchor="middle" font-size="11" fill="${COLORS.president.sub}">Head of Executive — ${cabinet.date}</text>
+  const hx=(SVG_W-HW)/2, hy=14;
+  h+=`<g>
+    <rect class="node-card" x="${hx}" y="${hy}" width="${HW}" height="${HH}" rx="10" fill="${C.pres.fill}" stroke="${C.pres.stroke}" stroke-width="1"/>
+    <text x="${hx+HW/2}" y="${hy+24}" text-anchor="middle" font-size="15" font-weight="600" fill="${C.pres.text}">President Uhuru Kenyatta</text>
+    <text x="${hx+HW/2}" y="${hy+46}" text-anchor="middle" font-size="13" fill="${C.pres.sub}">Head of Executive — ${cabinet.date}</text>
   </g>`;
 
-  const firstX = (totalSVGW - (COLS * (CARD_W + COL_GAP) - COL_GAP)) / 2;
+  const startX=(SVG_W-(COLS*(CW+HGAP)-HGAP))/2;
 
-  members.forEach((m, i) => {
-    const col = i % COLS;
-    const row = Math.floor(i / COLS);
-    const x = firstX + col * (CARD_W + COL_GAP);
-    const csY = START_Y + row * (CARD_H + PS_H + ROW_GAP);
-    const psY = csY + CARD_H + 10;
-    const csTopX = x + CARD_W / 2;
+  members.forEach((m,i)=>{
+    const col=i%COLS;
+    const row=Math.floor(i/COLS);
+    const x=startX+col*(CW+HGAP);
+    const csY=START_Y+row*ROW_H;
+    const psY=csY+CH+16;
+    const midX=x+CW/2;
 
-    // Connector from president to CS
-    const fromY = headY + HEAD_H;
-    const midY = csY - 12;
-    html += `<path d="M${totalSVGW/2} ${fromY} L${totalSVGW/2} ${fromY+8} L${csTopX} ${midY} L${csTopX} ${csY}" fill="none" stroke="${COLORS.cs.stroke}" stroke-width="0.7" opacity="0.35"/>`;
+    // connector from president to CS
+    h+=`<path d="M${SVG_W/2} ${hy+HH} L${SVG_W/2} ${hy+HH+8} L${midX} ${csY-14} L${midX} ${csY}" fill="none" stroke="${C.cs.stroke}" stroke-width="0.6" opacity="0.3"/>`;
 
-    // CS Card
-    const ministry = truncate(m.ministry, 28);
-    const csName = truncate(m.name, 22);
-    html += `<g class="node-group" onmouseenter="showTip(event, ${JSON.stringify(m).replace(/"/g,'&quot;')})" onmouseleave="hideTip()">
-      <rect class="node-card" x="${x}" y="${csY}" width="${CARD_W}" height="${CARD_H}" rx="8" fill="${COLORS.cs.fill}" stroke="${COLORS.cs.stroke}" stroke-width="0.8"/>
-      <text x="${x+CARD_W/2}" y="${csY+18}" text-anchor="middle" font-size="12" font-weight="500" fill="${COLORS.cs.text}">${csName}</text>
-      <text x="${x+CARD_W/2}" y="${csY+34}" text-anchor="middle" font-size="10" fill="${COLORS.cs.sub}">${ministry}</text>
+    // CS card — larger text
+    const csName=trunc(m.name,24);
+    const min=trunc(m.ministry,30);
+    h+=`<g class="node-group" onmouseenter="showTip(event,${JSON.stringify(m).replace(/"/g,'&quot;')})" onmouseleave="hideTip()">
+      <rect class="node-card" x="${x}" y="${csY}" width="${CW}" height="${CH}" rx="8" fill="${C.cs.fill}" stroke="${C.cs.stroke}" stroke-width="0.8"/>
+      <text x="${midX}" y="${csY+22}" text-anchor="middle" font-size="14" font-weight="600" fill="${C.cs.text}">${csName}</text>
+      <text x="${midX}" y="${csY+42}" text-anchor="middle" font-size="12" fill="${C.cs.sub}">${min}</text>
     </g>`;
 
-    // PS Card (if exists)
-    if (m.ps) {
-      const psName = truncate(m.ps, 22);
-      html += `<line x1="${csTopX}" y1="${csY+CARD_H}" x2="${csTopX}" y2="${psY}" stroke="${COLORS.ps.stroke}" stroke-width="0.7" marker-end="url(#arr2)" opacity="0.6"/>`;
-      html += `<g class="node-group" onmouseenter="showTip(event, ${JSON.stringify({name: m.ps, ministry: 'Principal Secretary', ps: 'Reports to: '+m.name}).replace(/"/g,'&quot;')})" onmouseleave="hideTip()">
-        <rect class="node-card" x="${x+10}" y="${psY}" width="${CARD_W-20}" height="${PS_H}" rx="6" fill="${COLORS.ps.fill}" stroke="${COLORS.ps.stroke}" stroke-width="0.7"/>
-        <text x="${x+CARD_W/2}" y="${psY+15}" text-anchor="middle" font-size="11" font-weight="500" fill="${COLORS.ps.text}">${psName}</text>
-        <text x="${x+CARD_W/2}" y="${psY+29}" text-anchor="middle" font-size="10" fill="${COLORS.ps.sub}">Principal Secretary</text>
+    // PS card
+    if(m.ps){
+      const psName=trunc(m.ps,24);
+      h+=`<line x1="${midX}" y1="${csY+CH}" x2="${midX}" y2="${psY}" stroke="${C.ps.stroke}" stroke-width="0.7" marker-end="url(#arr2)" opacity="0.65"/>`;
+      h+=`<g class="node-group" onmouseenter="showTip(event,${JSON.stringify({name:m.ps,ministry:'Principal Secretary',ps:'Reports to: '+m.name}).replace(/"/g,'&quot;')})" onmouseleave="hideTip()">
+        <rect class="node-card" x="${x+12}" y="${psY}" width="${CW-24}" height="${PSH}" rx="6" fill="${C.ps.fill}" stroke="${C.ps.stroke}" stroke-width="0.7"/>
+        <text x="${midX}" y="${psY+17}" text-anchor="middle" font-size="13" font-weight="600" fill="${C.ps.text}">${psName}</text>
+        <text x="${midX}" y="${psY+34}" text-anchor="middle" font-size="12" fill="${C.ps.sub}">Principal Secretary</text>
       </g>`;
     }
   });
 
-  if (members.length === 0) {
-    html += `<text x="${totalSVGW/2}" y="${totalH/2}" text-anchor="middle" font-size="14" fill="var(--color-text-tertiary, #888)">No results found</text>`;
+  if(members.length===0){
+    h+=`<text x="${SVG_W/2}" y="${SVG_H/2}" text-anchor="middle" font-size="15" fill="var(--color-text-tertiary,#888)">No results found</text>`;
   }
-
-  svg.innerHTML = html;
+  svg.innerHTML=h;
 }
 
-function filterNodes(val) {
-  filterText = val.toLowerCase().trim();
-  render();
+function filterNodes(v){filterText=v.toLowerCase().trim();render()}
+
+function showTip(e,data){
+  const t=document.getElementById("tooltip");
+  t.innerHTML=`<div class="t-name">${data.name}</div><div class="t-ministry">${data.ministry}</div>${data.ps?`<div class="t-ps">PS: ${data.ps}</div>`:''}`;
+  t.style.display="block";posTip(e);
 }
-
-function showTip(e, data) {
-  const tip = document.getElementById("tooltip");
-  tip.innerHTML = `<div class="t-name">${data.name}</div><div class="t-ministry">${data.ministry}</div>${data.ps ? `<div class="t-ps">PS: ${data.ps}</div>` : ''}`;
-  tip.style.display = "block";
-  positionTip(e);
+function hideTip(){document.getElementById("tooltip").style.display="none"}
+document.addEventListener("mousemove",e=>{const t=document.getElementById("tooltip");if(t.style.display==="block")posTip(e)});
+function posTip(e){
+  const t=document.getElementById("tooltip");
+  const x=e.clientX+14,y=e.clientY-10;
+  t.style.left=(x+280>window.innerWidth?e.clientX-290:x)+"px";
+  t.style.top=y+"px";
 }
-
-function hideTip() {
-  document.getElementById("tooltip").style.display = "none";
-}
-
-document.addEventListener("mousemove", e => {
-  const tip = document.getElementById("tooltip");
-  if (tip.style.display === "block") positionTip(e);
-});
-
-function positionTip(e) {
-  const tip = document.getElementById("tooltip");
-  const x = e.clientX + 14;
-  const y = e.clientY - 10;
-  const right = x + 260;
-  tip.style.left = (right > window.innerWidth ? e.clientX - 270 : x) + "px";
-  tip.style.top = y + "px";
-}
-
-initTabs();
-render();
+initTabs();render();
 </script>
